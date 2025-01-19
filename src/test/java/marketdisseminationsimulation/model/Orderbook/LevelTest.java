@@ -29,7 +29,6 @@ class LevelTest {
 
     @Test
     void testAddOrderBookEntry() {
-        level.addOrderBookEntry(order1);
         level.addOrderBookEntry(order2);
         assertEquals(2, level.getLevelOrderCount());
         assertEquals(150, level.getLevelOrderQuantity());
@@ -37,7 +36,6 @@ class LevelTest {
 
     @Test
     void testRemoveOrderBookEntry() {
-        level.addOrderBookEntry(order1);
         level.addOrderBookEntry(order2);
         level.removeOrderBookEntry();
         assertEquals(50, level.getLevelOrderQuantity());
@@ -46,7 +44,6 @@ class LevelTest {
 
     @Test
     void testIsEmpty() {
-        level.addOrderBookEntry(order1);
         assertFalse(level.isEmpty());
         level.removeOrderBookEntry();
         assertTrue(level.isEmpty());
@@ -54,7 +51,7 @@ class LevelTest {
 
     @Test
     void testGetLevelOrderCount() {
-        level.addOrderBookEntry(order1);
+
         assertEquals(1, level.getLevelOrderCount());
         level.addOrderBookEntry(order2);
         assertEquals(2, level.getLevelOrderCount());
@@ -62,7 +59,7 @@ class LevelTest {
 
     @Test
     void testGetLevelOrderQuantity() {
-        level.addOrderBookEntry(order1);
+
         assertEquals(100, level.getLevelOrderQuantity());
         level.addOrderBookEntry(order2);
         assertEquals(150, level.getLevelOrderQuantity());
@@ -70,7 +67,6 @@ class LevelTest {
 
     @Test
     void testGetOrderBookEntry() {
-        level.addOrderBookEntry(order1);
         assertEquals(order1, level.getOrderBookEntry());
     }
 }

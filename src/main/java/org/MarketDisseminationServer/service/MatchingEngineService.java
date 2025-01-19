@@ -2,11 +2,12 @@ package org.MarketDisseminationServer.service;
 
 import org.MarketDisseminationServer.Orderbook.OrderBookEntry;
 import org.MarketDisseminationServer.Orderbook.Orderbook;
-import org.MarketDisseminationServer.Orders.NewOrder;
+import org.MarketDisseminationServer.Orderbook.DTO.OrderbookUpdate;
 import org.MarketDisseminationServer.Orderbook.Level;
-import org.MarketDisseminationServer.Orders.OrderCore;
+import org.MarketDisseminationServer.Orders.NewOrder;
+import org.MarketDisseminationServer.Orderbook.DTO.UpdateTypes;
 
-import java.util.Random;
+import java.util.ArrayList;
 
 public class MatchingEngineService {
     private final int securityId;
@@ -14,7 +15,7 @@ public class MatchingEngineService {
 
     public MatchingEngineService(int securityId) {
         this.securityId = securityId;
-        this.orderbook = new Orderbook(securityId);
+        this.orderbook = new Orderbook();
     }
 
     public void start() {
@@ -22,16 +23,19 @@ public class MatchingEngineService {
         System.out.println("Listening for Orders");
     }
 
-    public void matchOrder(NewOrder order) {
+    public ArrayList<OrderbookUpdate> matchOrder (NewOrder order) {
         if (order.isBuySide) {
-            matchBuyOrder(order);
+            return matchBuyOrder(order);
         } else {
-            matchSellOrder(order);
+            return matchSellOrder(order);
         }
     }
 
-    public void matchBuyOrder(NewOrder order) {
+    public ArrayList<OrderbookUpdate> matchBuyOrder(NewOrder order) {
         int toFill = order.getInitialQuantity();
+        int quantityToFill;
+        OrderBookEntry entryToAdd;
+        ArrayList<OrderbookUpdate> updates = new ArrayList<OrderbookUpdate>();
         while (toFill > 0) {
             Integer bestAsk = orderbook.getBestAsk();
 
@@ -42,66 +46,58 @@ public class MatchingEngineService {
             // fill order
             Level bestAskLevel = orderbook.getSellSideLevel(bestAsk); // the level with orders that can fill our buy order
 
-            int quantityToFill = Math.min(toFill, bestAskLevel.getOrderBookEntry().getCurrentQuantity());
+            quantityToFill = Math.min(toFill, bestAskLevel.getOrderBookEntry().getCurrentQuantity());
 
             bestAskLevel.getOrderBookEntry().decreaseQuantity(quantityToFill);
 
             toFill -= quantityToFill;
-
             if(bestAskLevel.getOrderBookEntry().getCurrentQuantity() == 0) {
                 orderbook.removeOrder(bestAsk, false);
+                updates.add(new OrderbookUpdate(bestAsk, quantityToFill, UpdateTypes.DECREASEQUANTITY, order.getUsername(), false));
+            } else {
+                updates.add(new OrderbookUpdate(bestAsk, null, UpdateTypes.REMOVE, order.getUsername(), false));
             }
         }
 
         // order not completely filled
         if (toFill != 0) {
-            OrderBookEntry entryToAdd = new OrderBookEntry(order, toFill);
+            entryToAdd = new OrderBookEntry(order, toFill);
             orderbook.addOrder(entryToAdd);
+            updates.add(new OrderbookUpdate(entryToAdd.getPrice(), toFill, UpdateTypes.ADD, order.getUsername(), true));
         }
-
+        return !updates.isEmpty() ? updates : null;
     }
 
-    public void matchSellOrder(NewOrder order) {
+    public ArrayList<OrderbookUpdate> matchSellOrder(NewOrder order) {
         int toFill = order.getInitialQuantity();
+        int quantityToFill;
+        OrderBookEntry entryToAdd;
+        ArrayList<OrderbookUpdate> updates = new ArrayList<OrderbookUpdate>();
         while (toFill > 0) {
             Integer bestBid = orderbook.getBestBid();
             if (bestBid == null || order.getPrice() > bestBid) break;
             // fill order
             Level bestBidLevel = orderbook.getBuysideLevel(bestBid); // the level with orders that can fill our buy order
 
-            int quantityToFill = Math.min(toFill, bestBidLevel.getOrderBookEntry().getCurrentQuantity());
+            quantityToFill = Math.min(toFill, bestBidLevel.getOrderBookEntry().getCurrentQuantity());
 
             bestBidLevel.getOrderBookEntry().decreaseQuantity(quantityToFill);
             toFill -= quantityToFill;
 
             if(bestBidLevel.getOrderBookEntry().getCurrentQuantity() == 0) {
                 orderbook.removeOrder(bestBid, true);
+                updates.add(new OrderbookUpdate(bestBid, quantityToFill, UpdateTypes.DECREASEQUANTITY, order.getUsername(), false));
+            } else {
+                updates.add(new OrderbookUpdate(bestBid, null, UpdateTypes.REMOVE, order.getUsername(), false));
             }
         }
 
         // order not completely filled
         if (toFill != 0) {
-            OrderBookEntry entryToAdd = new OrderBookEntry(order, toFill);
+            entryToAdd = new OrderBookEntry(order, toFill);
             orderbook.addOrder(entryToAdd);
+            updates.add(new OrderbookUpdate(entryToAdd.getPrice(), toFill, UpdateTypes.ADD, order.getUsername(), false));
         }
-
-    }
-
-    //initialize orders for start up
-
-    public void initializeOrderbook() {
-        // 50 levels in the orderbook
-        int username;
-        int orderId;
-        int quantity;
-        Random rand = new Random();
-        for (int i = 25; i < 50; i++) {
-            for (int j = 0; j < 19; j++) {
-                username = 1000 + rand.nextInt(9000);
-                orderId = 1000 + rand.nextInt(9000);
-                quantity = 1 + rand.nextInt(500);
-                orderbook.addOrder(new OrderBookEntry(new NewOrder(new OrderCore(username, securityId, orderId), i, quantity, false), quantity));
-            }
-        }
+        return !updates.isEmpty() ? updates : null;
     }
 }

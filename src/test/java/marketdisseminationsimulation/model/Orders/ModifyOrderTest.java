@@ -46,19 +46,21 @@ public class ModifyOrderTest {
     }
 
     @Test
-    public void testNewOrder() {
+    public void testCreateNewOrder() {
         int username = 123;
         int securityId = 456;
         int orderId = 789;
         OrderCore orderCore = new OrderCore(username, securityId, orderId);
-        int price = 100;
-        int quantity = 10;
-        boolean isBuySide = false;
+        int modifyPrice = 100;
+        int modifyQuantity = 10;
+        boolean isBuySide = true;
 
-        ModifyOrder modifyOrder = new ModifyOrder(orderCore, price, quantity, isBuySide);
-
+        ModifyOrder modifyOrder = new ModifyOrder(orderCore, modifyPrice, modifyQuantity, isBuySide);
         NewOrder newOrder = modifyOrder.createNewOrder();
 
-        assertEquals(newOrder, new NewOrder(orderCore, quantity, price, false));
+        NewOrder expectedOrder = new NewOrder(orderCore, modifyPrice, modifyQuantity, isBuySide);
+
+        assertEquals(newOrder, expectedOrder);
     }
+
 }

@@ -1,8 +1,10 @@
 package org.MarketDisseminationServer.Orders;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode
 public class NewOrder {
 
     private final OrderCore orderCore;

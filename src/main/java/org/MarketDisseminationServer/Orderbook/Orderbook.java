@@ -9,7 +9,7 @@ public class Orderbook {
     public ConcurrentSkipListMap<Integer, Level> buySide;
     public ConcurrentSkipListMap<Integer, Level> sellSide;
 
-    public Orderbook(int SecurityId) {
+    public Orderbook() {
         buySide = new ConcurrentSkipListMap<>();
         sellSide = new ConcurrentSkipListMap<>();
     }
