@@ -19,13 +19,6 @@ public class Disseminator {
         this.matchingEngineService = new MatchingEngineService(securityID);
     }
 
-    public void start() throws JsonProcessingException {
-        while (true) {
-            ArrayList<OrderbookUpdate> updates = matchOrder();
-            break;
-        }
-    }
-
     public ArrayList<OrderbookUpdate> matchOrder() {
         return matchingEngineService.matchOrder(orderGeneratorService.generateNewOrder());
     }
