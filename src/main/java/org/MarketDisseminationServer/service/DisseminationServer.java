@@ -24,9 +24,7 @@ public class DisseminationServer extends WebSocketServer {
 
     private final Disseminator d1;
     private final Disseminator d2;
-
-    private final Serializer serializer;
-
+    
     public DisseminationServer(InetSocketAddress address) {
         super(address);
 
@@ -36,7 +34,6 @@ public class DisseminationServer extends WebSocketServer {
         d1 = new Disseminator(1);
         d2 = new Disseminator(2);
 
-        serializer = new Serializer();
     }
 
     public Set<WebSocket> getSubscribers(Integer id) {
@@ -60,7 +57,6 @@ public class DisseminationServer extends WebSocketServer {
                 while (true) {
                     executor.submit(() -> {
                         try {
-                            System.out.println("Sending update...");
                             if (securityID == 1) {
                                 broadcast(Serializer.serialize(d1.matchOrder()), securityID);
                             } else {
