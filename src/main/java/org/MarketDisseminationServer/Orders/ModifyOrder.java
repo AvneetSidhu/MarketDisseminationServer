@@ -24,7 +24,6 @@ public class ModifyOrder {
     }
 
     public NewOrder createNewOrder() {
-        //create new OrderCore for new IDs
         return new NewOrder(orderCore, price, quantity, isBuySide);
     }
 }

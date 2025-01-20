@@ -1,9 +1,4 @@
-package org.MarketDisseminationServer.Orderbook.DTO;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.ArrayList;
+package org.MarketDisseminationServer.Serializer.DTO;
 
 public class OrderbookUpdate {
     public String type;
@@ -20,10 +15,5 @@ public class OrderbookUpdate {
         this.Quantity = priceLevel;
         this.isBuySide = isBuySide;
         this.username = username;
-    }
-
-    public static String serialize(ArrayList<OrderbookUpdate> update) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(update);
     }
 }

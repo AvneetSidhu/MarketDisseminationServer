@@ -1,10 +1,9 @@
 package org.MarketDisseminationServer.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.MarketDisseminationServer.Orderbook.DTO.OrderbookSnapShot;
-import org.MarketDisseminationServer.Orderbook.DTO.OrderbookUpdate;
-import org.MarketDisseminationServer.Orderbook.Orderbook;
+import org.MarketDisseminationServer.Serializer.DTO.OrderbookSnapShot;
+import org.MarketDisseminationServer.Serializer.DTO.OrderbookUpdate;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 public class Disseminator {
@@ -23,7 +22,9 @@ public class Disseminator {
         return matchingEngineService.matchOrder(orderGeneratorService.generateNewOrder());
     }
 
-    public OrderbookSnapShot getOrderbookSnapshot(long TimeStamp, Orderbook orderbook) {
-        return new OrderbookSnapShot(TimeStamp, orderbook);
+    public OrderbookSnapShot getOrderbookSnapshot() {
+        String timestamp = Instant.now().toString();
+        ;
+        return new OrderbookSnapShot(timestamp, matchingEngineService.getOrderbook());
     }
 }

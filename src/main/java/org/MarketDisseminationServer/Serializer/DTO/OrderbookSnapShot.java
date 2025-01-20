@@ -1,22 +1,21 @@
-package org.MarketDisseminationServer.Orderbook.DTO;
+package org.MarketDisseminationServer.Serializer.DTO;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.MarketDisseminationServer.Orderbook.Level;
 import org.MarketDisseminationServer.Orderbook.OrderBookEntry;
 import org.MarketDisseminationServer.Orderbook.Orderbook;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class OrderbookSnapShot {
     public String type;
-    public long timestamp;
+    public String timestamp;
     public HashMap<Integer, Object[]> bids;
     public HashMap<Integer, Object[]> asks;
 
-    public OrderbookSnapShot(long timestamp, Orderbook orderbook) {
+    public OrderbookSnapShot(String timestamp, Orderbook orderbook) {
         this.type = "snapshot";
         this.timestamp = timestamp;
         this.bids = sideToHashMap(orderbook.buySide);
@@ -40,10 +39,5 @@ public class OrderbookSnapShot {
             hashMap.put(entry.getKey(), levelToArray(entry.getValue()));
         }
         return hashMap;
-    }
-
-    public static String serialize(OrderbookSnapShot snapShot) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(snapShot);
     }
 }

@@ -1,10 +1,7 @@
 package org.MarketDisseminationServer.Orderbook;
 
-import org.MarketDisseminationServer.Orderbook.Level;
-
 import java.util.concurrent.ConcurrentSkipListMap;
 
-//holds levels
 public class Orderbook {
     public ConcurrentSkipListMap<Integer, Level> buySide;
     public ConcurrentSkipListMap<Integer, Level> sellSide;

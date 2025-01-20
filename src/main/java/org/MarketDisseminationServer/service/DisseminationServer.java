@@ -1,32 +1,42 @@
 package org.MarketDisseminationServer.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.MarketDisseminationServer.Orderbook.DTO.OrderbookUpdate;
-import org.java_websocket.server.WebSocketServer;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.MarketDisseminationServer.Serializer.Serializer;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.*;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class DisseminationServer extends WebSocketServer {
 
-    private final ObjectMapper mapper;
-    private ConcurrentHashMap<Integer, Set<WebSocket>> subscribers ;
+    private final ConcurrentHashMap<Integer, Set<WebSocket>> subscribers;
+
     private final ExecutorService executor;
+
     private final Disseminator d1;
+    private final Disseminator d2;
+
+    private final Serializer serializer;
+
     public DisseminationServer(InetSocketAddress address) {
         super(address);
-        mapper = new ObjectMapper();
+
         subscribers = new ConcurrentHashMap<>();
         executor = Executors.newCachedThreadPool();
+
         d1 = new Disseminator(1);
+        d2 = new Disseminator(2);
+
+        serializer = new Serializer();
     }
 
     public Set<WebSocket> getSubscribers(Integer id) {
@@ -44,7 +54,7 @@ public class DisseminationServer extends WebSocketServer {
         System.out.println("Disconnected from " + conn.getRemoteSocketAddress());
     }
 
-    public void sendUpdates() {
+    public void sendUpdates(int securityID) {
         executor.submit(() -> {
             try {
                 while (true) {
@@ -52,7 +62,11 @@ public class DisseminationServer extends WebSocketServer {
                     executor.submit(() -> {
                         try {
                             System.out.println("Sending update...");
-                            broadcast(OrderbookUpdate.serialize(d1.matchOrder()), 1);
+                            if (securityID == 1) {
+                                broadcast(Serializer.serialize(d1.matchOrder()), securityID);
+                            } else {
+                                broadcast(Serializer.serialize(d2.matchOrder()), securityID);
+                            }
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
                             System.out.println("Error processing the update.");
@@ -92,6 +106,11 @@ public class DisseminationServer extends WebSocketServer {
             if (action.equals("subscribe")) {
                 subscribers.computeIfAbsent(securityID, k -> new HashSet<>()).add(conn);
                 System.out.println("Subscribed to securityID " + securityID);
+                if (securityID == 1) {
+                    conn.send(Serializer.serialize(d1.getOrderbookSnapshot()));
+                } else {
+                    conn.send(Serializer.serialize(d2.getOrderbookSnapshot()));
+                }
             } else {
                 subscribers.get(securityID).remove(conn);
                 System.out.println("user unsubscribed from securityID " + securityID);
@@ -109,7 +128,8 @@ public class DisseminationServer extends WebSocketServer {
     @Override
     public void onStart() {
         System.out.println("Starting WebSocket Server: Listening on port: " + getPort());
-        sendUpdates();
+        sendUpdates(1);
+        sendUpdates(2);
     }
 
     public void shutdown() {

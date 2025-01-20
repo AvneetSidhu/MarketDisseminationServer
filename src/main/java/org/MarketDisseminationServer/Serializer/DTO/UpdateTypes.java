@@ -1,4 +1,4 @@
-package org.MarketDisseminationServer.Orderbook.DTO;
+package org.MarketDisseminationServer.Serializer.DTO;
 
 public enum UpdateTypes {
     ADD, REMOVE, DECREASEQUANTITY;
