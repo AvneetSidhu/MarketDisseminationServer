@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 
 public class Serializer {
-    ObjectMapper mapper = new ObjectMapper();
+    static ObjectMapper mapper = new ObjectMapper();
 
     public Serializer() {
         mapper = new ObjectMapper();
@@ -24,7 +24,7 @@ public class Serializer {
         return mapper.writeValueAsString(orderbookUpdate);
     }
 
-    public ClientRequest deserialize(String message) throws JsonProcessingException {
+    public static ClientRequest deserialize(String message) throws JsonProcessingException {
         return mapper.readValue(message, ClientRequest.class);
     }
 }

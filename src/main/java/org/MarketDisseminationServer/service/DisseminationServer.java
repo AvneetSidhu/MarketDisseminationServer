@@ -1,7 +1,7 @@
 package org.MarketDisseminationServer.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import org.MarketDisseminationServer.Serializer.DTO.ClientRequest;
 import org.MarketDisseminationServer.Serializer.Serializer;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -58,7 +58,6 @@ public class DisseminationServer extends WebSocketServer {
         executor.submit(() -> {
             try {
                 while (true) {
-                    // Submit a new task to the executor to broadcast the update concurrently
                     executor.submit(() -> {
                         try {
                             System.out.println("Sending update...");
@@ -72,12 +71,10 @@ public class DisseminationServer extends WebSocketServer {
                             System.out.println("Error processing the update.");
                         }
                     });
-
-                    // Introduce a delay (e.g., 500 milliseconds) before submitting the next update
-                    Thread.sleep(500);  // 500 milliseconds between updates
+                    Thread.sleep(500);
                 }
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();  // Restore the interrupt flag
+                Thread.currentThread().interrupt();
                 System.out.println("Update task was interrupted.");
             }
         });
@@ -99,21 +96,20 @@ public class DisseminationServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         try {
-            System.out.println(message);
-            JsonNode jsonNode = mapper.readTree(message);
-            String action = jsonNode.get("action").asText();
-            int securityID = jsonNode.get("securityID").asInt();
-            if (action.equals("subscribe")) {
-                subscribers.computeIfAbsent(securityID, k -> new HashSet<>()).add(conn);
-                System.out.println("Subscribed to securityID " + securityID);
-                if (securityID == 1) {
+            ClientRequest request = Serializer.deserialize(message);
+
+            if (request.getAction().equals("subscribe")) {
+                subscribers.computeIfAbsent(request.getSecurityID(), k -> new HashSet<>()).add(conn);
+                System.out.println("Subscribed to securityID " + request.getSecurityID());
+
+                if (request.getSecurityID() == 1) {
                     conn.send(Serializer.serialize(d1.getOrderbookSnapshot()));
                 } else {
                     conn.send(Serializer.serialize(d2.getOrderbookSnapshot()));
                 }
             } else {
-                subscribers.get(securityID).remove(conn);
-                System.out.println("user unsubscribed from securityID " + securityID);
+                subscribers.get(request.getSecurityID()).remove(conn);
+                System.out.println("user unsubscribed from securityID " + request.getSecurityID());
             }
         } catch (Exception e) {
             System.out.println("user at " + conn.getRemoteSocketAddress() + " sent a message that could not be parsed");
