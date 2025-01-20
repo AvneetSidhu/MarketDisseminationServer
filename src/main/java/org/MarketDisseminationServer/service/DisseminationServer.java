@@ -24,7 +24,7 @@ public class DisseminationServer extends WebSocketServer {
 
     private final Disseminator d1;
     private final Disseminator d2;
-    
+
     public DisseminationServer(InetSocketAddress address) {
         super(address);
 
@@ -48,6 +48,9 @@ public class DisseminationServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
+        for (Set<WebSocket> subscribers : subscribers.values()) {
+            subscribers.remove(conn);
+        }
         System.out.println("Disconnected from " + conn.getRemoteSocketAddress());
     }
 
@@ -58,9 +61,11 @@ public class DisseminationServer extends WebSocketServer {
                     executor.submit(() -> {
                         try {
                             if (securityID == 1) {
-                                broadcast(Serializer.serialize(d1.matchOrder()), securityID);
+                                var res1 = d1.matchOrder();
+                                broadcast(Serializer.getBroadcastString(res1.getKey(), res1.getValue()), securityID);
                             } else {
-                                broadcast(Serializer.serialize(d2.matchOrder()), securityID);
+                                var res2 = d2.matchOrder();
+                                broadcast(Serializer.getBroadcastString(res2.getKey(), res2.getValue()), securityID);
                             }
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();

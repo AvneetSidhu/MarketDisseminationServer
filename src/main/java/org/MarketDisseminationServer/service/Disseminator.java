@@ -1,9 +1,11 @@
 package org.MarketDisseminationServer.service;
 
+import org.MarketDisseminationServer.Orders.NewOrder;
 import org.MarketDisseminationServer.Serializer.DTO.OrderbookSnapShot;
 import org.MarketDisseminationServer.Serializer.DTO.OrderbookUpdate;
 
 import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 
 public class Disseminator {
@@ -18,8 +20,9 @@ public class Disseminator {
         this.matchingEngineService = new MatchingEngineService(securityID);
     }
 
-    public ArrayList<OrderbookUpdate> matchOrder() {
-        return matchingEngineService.matchOrder(orderGeneratorService.generateNewOrder());
+    public AbstractMap.SimpleEntry<NewOrder, ArrayList<OrderbookUpdate>> matchOrder() {
+        NewOrder order = orderGeneratorService.generateNewOrder();
+        return new AbstractMap.SimpleEntry<>(order, matchingEngineService.matchOrder(order));
     }
 
     public OrderbookSnapShot getOrderbookSnapshot() {
