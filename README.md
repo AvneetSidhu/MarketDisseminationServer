@@ -42,6 +42,5 @@ The order book matches orders based on time-price priority and FIFO principles.
 Real-Time Updates:
 
 Clients receive real-time updates about the order book’s state, such as new orders, executed orders, and changes in order quantities.
-State Sync:
 
-The server periodically sends a snapshot of the current state of the order book to clients to ensure they are in sync.
+State Sync: The server periodically sends a snapshot of the current state of the order book to clients to ensure they are in sync.
