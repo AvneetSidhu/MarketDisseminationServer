@@ -1,7 +1,7 @@
-*Trading Engine Simulator*
+#Trading Engine Simulator#
 A market dissemination simulation written in Java using Java-WebSocket for real-time communication. This project simulates a trading engine that maintains a limit order book, processes buy and sell orders, and provides real-time updates to clients.
 
-**Features**
+##Features##
 Real-Time Market Data: A multi-channel WebSocket server that sends real-time market updates to connected clients.
 Limit Order Book Simulation: Implements time-price priority and FIFO matching for multiple fictional securities.
 State Synchronization: Uses state-synchronization to ensure the client always has the latest order book state.
@@ -25,7 +25,7 @@ Observer Pattern: Clients are notified of updates (such as order additions or re
 Serialization:
 
 Utilizes the Jackson library to handle JSON serialization and deserialization of messages sent to and from clients.
-**How It Works**
+##How It Works##
 Client Connection:
 
 Clients connect to the WebSocket server and subscribe to updates for specific securities.
