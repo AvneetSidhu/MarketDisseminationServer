@@ -25,14 +25,17 @@ Observer Pattern: Clients are notified of updates (such as order additions or re
 Serialization:
 
 Utilizes the Jackson library to handle JSON serialization and deserialization of messages sent to and from clients.
+
 ## How It Works
 Client Connection:
 
-Clients connect to the WebSocket server and subscribe to updates for specific securities.
+Clients connect to the WebSocket server and subscribe to updates for specific securities. Client connections are organized by subscription to securities in a ConcurrentHashMap (Channels).
+
 Order Processing:
 
-Buy and sell orders are processed and added to the order book.
+Buy and sell orders are generated, processed and added to the order book.
 The order book matches orders based on time-price priority and FIFO principles.
+
 Real-Time Updates:
 
 Clients receive real-time updates about the order book’s state, such as new orders, executed orders, and changes in order quantities.
