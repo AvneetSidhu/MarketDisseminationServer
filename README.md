@@ -7,7 +7,8 @@ Limit Order Book Simulation: Implements time-price priority and FIFO matching fo
 State Synchronization: Uses state-synchronization to ensure the client always has the latest order book state.
 Observer Pattern: Updates clients with changes to the order book via the observer pattern for efficient notification delivery.
 Serialization: Utilizes Jackson to serialize and deserialize messages between the server and client.
-Project Architecture
+
+## Project Architecture
 The project leverages the following key components:
 
 Trading Engine: Implements the core logic for maintaining a limit order book.
