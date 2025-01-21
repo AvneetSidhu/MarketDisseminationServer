@@ -10,21 +10,19 @@ Serialization: Utilizes Jackson to serialize and deserialize messages between th
 Project Architecture
 The project leverages the following key components:
 
-Trading Engine:
-
-Implements the core logic for maintaining a limit order book.
+Trading Engine: Implements the core logic for maintaining a limit order book.
 Supports time-price priority and FIFO matching for orders.
-WebSocket Server:
 
-A multi-channel WebSocket server that handles concurrent client connections.
+WebSocket Server: A multi-channel WebSocket server that handles concurrent client connections.
 Pushes low-latency updates of the order book to all connected clients.
+
 Synchronization Mechanisms:
 
 State Synchronization: Periodically sends a full snapshot of the order book to the clients and only updates the changes (deltas) going forward.
-Observer Pattern: Clients are notified of updates (such as order additions or removals) in real time.
-Serialization:
 
-Utilizes the Jackson library to handle JSON serialization and deserialization of messages sent to and from clients.
+Observer Pattern: Clients are notified of updates (such as order additions or removals) in real time.
+
+Serialization: Utilizes the Jackson library to handle JSON serialization and deserialization of messages sent to and from clients.
 
 ## How It Works
 Client Connection:
