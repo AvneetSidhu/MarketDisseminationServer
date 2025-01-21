@@ -2,10 +2,14 @@
 A market dissemination simulation written in Java using Java-WebSocket for real-time communication. This project simulates a trading engine that maintains a limit order book, processes buy and sell orders, and provides real-time updates to clients.
 
 ## Features
-Real-Time Market Data: A multi-channel WebSocket server that sends real-time market updates to connected clients.
+Real-Time Market Data: A multi-channel WebSocket server that sends real-time mock market updates to connected clients.
+
 Limit Order Book Simulation: Implements time-price priority and FIFO matching for multiple fictional securities.
+
 State Synchronization: Uses state-synchronization to ensure the client always has the latest order book state.
+
 Observer Pattern: Updates clients with changes to the order book via the observer pattern for efficient notification delivery.
+
 Serialization: Utilizes Jackson to serialize and deserialize messages between the server and client.
 
 ## Project Architecture
