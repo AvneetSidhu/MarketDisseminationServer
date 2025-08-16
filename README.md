@@ -4,7 +4,7 @@ A market dissemination simulation written in Java using Java-WebSocket for real-
 ## Features
 Real-Time Market Data: A multi-channel WebSocket server that sends real-time mock market updates to connected clients.
 
-Limit orderbook Simulation: Implements time-price priority and FIFO matching for multiple fictional securities.
+Limit orderbook Simulation: Implements time-price priority and FIFO matching for multiple fictional securities. The matching engine takes in orders and compares tries to provide them the best sell or buy price at that moment. If an acceptable price is found based on the limit set in the order, the order is filled either partially or completely. If an order is partially filled, then the remaining quantity is added to the orderbook. Orders are organized into levels on the buy side and sell side in the order of arrival.
 
 State Synchronization: Uses state-synchronization to ensure the client always has the latest orderbook state.
 
